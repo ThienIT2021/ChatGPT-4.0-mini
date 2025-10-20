@@ -295,17 +295,18 @@ if (!db || db.length === 0) {
 
     //const API_KEY = ;
     //const API_KEY = "https://chatgpt-proxy-server-kj30.onrender.com"; // 🔗 URL proxy của bạn
-	const API_KEY = window.location.hostname === "localhost" ? "http://localhost:3000/v1/chat/completions" : "https://chatgpt-proxy-server-kj30.onrender.com/v1/chat/completions";
+    const API_KEY = "http://localhost:3000"; // 🔗 URL proxy của bạn
+	//const API_KEY = window.location.hostname === "localhost" ? "http://localhost:3000/v1/chat/completions" : "https://chatgpt-proxy-server-kj30.onrender.com/v1/chat/completions";
 	let timer;
 
     async function checkAPIStatus() {
       const el = document.getElementById("apiStatus");
       try {
-        //const res = await fetch("`${API_KEY}/v1/models/gpt-4o-mini", {
-        //  headers: { "Authorization": `Bearer ${API_KEY}` }
-        //});
+        const res = await fetch("`${API_KEY}/v1/models/gpt-4o-mini", {
+          headers: { "Authorization": `Bearer ${API_KEY}` }
+        });
 		//const res = await fetch(`${API_KEY}/v1/models/gpt-4o-mini`);
-		const res = await fetch(`${API_KEY}'); 
+		//const res = await fetch(`${API_KEY}'); 
 
         if (res.ok) {
           el.textContent = "🟢 ChatGPT 5.0 Online";
@@ -431,16 +432,15 @@ if (!db || db.length === 0) {
         //  body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: msg }] })
         //});
 		  // try {
-    		const res = await fetch(API_KEY, {
-      			method: "POST",
-      			headers: {
-        			"Content-Type": "application/json"
-      			},
-      			body: JSON.stringify({
-        			model: "gpt-4o-mini",
-        			messages: [{ role: "user", content: userMessage }]
-      			})
-    		});
+    		const res = await fetch("http://localhost:3000/v1/chat/completions", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: "Xin chào GPT!" }]
+  })
+});
+
 		  //const res = await fetch(`${API_KEY}/v1/chat/completions`, {
           //method: "POST",
           //headers: { "Content-Type": "application/json" },
