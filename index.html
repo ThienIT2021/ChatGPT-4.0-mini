@@ -301,11 +301,11 @@ if (!db || db.length === 0) {
     async function checkAPIStatus() {
       const el = document.getElementById("apiStatus");
       try {
-        const res = await fetch("`${API_KEY}/v1/models/gpt-4o-mini", {
-          headers: { "Authorization": `Bearer ${API_KEY}` }
-        });
+        //const res = await fetch("`${API_KEY}/v1/models/gpt-4o-mini", {
+        //  headers: { "Authorization": `Bearer ${API_KEY}` }
+        //});
 		//const res = await fetch(`${API_KEY}/v1/models/gpt-4o-mini`);
-		//const res = await fetch("https://chatgpt-proxy-server-kj30.onrender.com/v1/chat/completions", {
+		const res = await fetch(`${API_KEY}'); 
 
         if (res.ok) {
           el.textContent = "🟢 ChatGPT 5.0 Online";
