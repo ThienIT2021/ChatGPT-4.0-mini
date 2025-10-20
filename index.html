@@ -24,8 +24,6 @@
       align-items: center;
       justify-content: center;
     }
-
-    /* ===== KHUNG KÍCH HOẠT ===== */
     #activation {
       background: var(--bg-chat);
       padding: 35px;
@@ -61,7 +59,6 @@
     button:hover { background: #0e8f71; transform: scale(1.02); }
     #status { color: #ff6b6b; margin-top: 10px; }
 
-    /* ===== GIAO DIỆN CHAT ===== */
     #chat {
       display: none;
       flex-direction: column;
@@ -131,7 +128,6 @@
     .user { flex-direction: row-reverse; }
     .user .bubble { background: var(--user-color); color: #fff; }
 
-    /* ===== INPUT BAR ===== */
     #input-bar {
       position: fixed;
       bottom: 0;
@@ -177,37 +173,17 @@
       transition: all 0.2s ease;
     }
     #sendBtn:hover { background: #0e8f71; transform: scale(1.1); }
-
-    /* ===== TYPING ===== */
     .typing {
       color: #9ca3af;
       font-style: italic;
       font-size: 14px;
       margin-left: 55px;
     }
-
-    /* ===== LOGOUT BUTTON ===== */
-    #logoutBtn {
-      position:absolute; 
-      right:50px; 
-      top:30px; 
-      width: 10%;
-      background:#ff5e5e;
-      border:none;
-      color:white;
-      padding:6px 10px;
-      border-radius:6px;
-      cursor:pointer;
-      font-weight:600;
-      transition:0.25s;
-    }
-    #logoutBtn:hover { background:#ff4040; transform:scale(1.05); }
-
     #userRank {
       position:absolute; 
       right:10px; 
       top:10px; 
-      width: 10%;
+      width: 15%;
       border:none;
       padding:6px 10px;
       border-radius:6px;
@@ -219,7 +195,6 @@
 </head>
 <body>
 
-  <!-- ===== Nhập Key ===== -->
   <div id="activation">
     <h2>🔑 Nhập key kích hoạt</h2>
     <input type="text" id="keyInput" placeholder="Nhập key...">
@@ -227,14 +202,12 @@
     <p id="status"></p>
   </div>
 
-  <!-- ===== Chat ===== -->
   <div id="chat">
     <div id="chat-header">
       💬 Thiên IT Support 24/7
       <div id="apiStatus">Đang kiểm tra kết nối ChatGPT....</div>
       <div id="countdown"></div>
-      <div id="userRank" style="width: 15%;"></div>
-      <!--<button id="logoutBtn" onclick="logout()">Đăng xuất</button>-->
+      <div id="userRank"></div>
     </div>
 
     <div id="messages"></div>
@@ -248,162 +221,27 @@
   </div>
 
   <script>
-    const keyDBName = "keyDB_fixed";
-const activatedName = "activatedKeys";
-let db = JSON.parse(localStorage.getItem(keyDBName) || "[]");
+    const PROXY_URL = "https://chatgpt-proxy-server-kj30.onrender.com"; // 🔗 URL proxy của bạn
 
-// ✅ Nếu chưa có DB thì tạo mới và cập nhật lại biến db ngay
-if (!db || db.length === 0) {
-  const keyDatabase = [
-  { key: "KEY-2H-ADCH1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-HTKM1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-NWDS1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-OPGH1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-PPCM1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-DCFG1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-POJG1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-ZAMX1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-DEVP1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-2H-MNKX1234", label: "2h", hours: 2, rank: "Normal" },
-  { key: "KEY-24H-ILKJ9012", label: "24h", hours: 24, rank: "Member" },
-  { key: "KEY-24H-IOIH9012", label: "24h", hours: 24, rank: "Member" },
-  { key: "KEY-24H-KLPI9012", label: "24h", hours: 24, rank: "Member" },
-  { key: "KEY-24H-VCRE9012", label: "24h", hours: 24, rank: "Member" },
-  { key: "KEY-24H-CXPL9012", label: "24h", hours: 24, rank: "Member" },
-  { key: "KEY-7D-MMKS3456", label: "7d", hours: 7 * 24, rank: "VIP" },
-  { key: "KEY-7D-TTGH3456", label: "7d", hours: 7 * 24, rank: "VIP" },
-  { key: "KEY-7D-PLQS3456", label: "7d", hours: 7 * 24, rank: "VIP" },
-  { key: "KEY-7D-NHAS3456", label: "7d", hours: 7 * 24, rank: "VIP" },
-  { key: "KEY-7D-SEXY3456", label: "7d", hours: 7 * 24, rank: "VIP" },
-  { key: "KEY-30D-ZZKN5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-PPLV5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-MMLK5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-YYGV5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-MLDS5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-BHGT5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-BIDV5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-SACO5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-TELA5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-MJTE5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "KEY-30D-META5678", label: "30d", hours: 30 * 24, rank: "Premium" },
-  { key: "ADMIN-KEY-DEV-365DAYS", label: "Admin 365d", hours: 365 * 24, rank: "Admin Dev", admin: true }
-];
-  localStorage.setItem(keyDBName, JSON.stringify(keyDatabase));
-  db = keyDatabase; // 🔥 Cập nhật lại biến db ngay sau khi tạo
-}
-
-
-    // const API_KEY = "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";
-    let timer;
-
+    // Hàm kiểm tra API
     async function checkAPIStatus() {
       const el = document.getElementById("apiStatus");
       try {
-        // const res = await fetch("https://api.openai.com/v1/models/gpt-4o-mini", {
-        //  headers: { "Authorization": `Bearer ${API_KEY}` }
-        //});
-        const res = await fetch("https://chatgpt-proxy-server-kj30.onrender.com/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: msg })
-        });
-
+        const res = await fetch(`${PROXY_URL}/v1/models`);
         if (res.ok) {
-          el.textContent = "🟢 ChatGPT 5.0 Online";
+          el.textContent = "🟢 ChatGPT Proxy Online";
           el.style.color = "#00ff99";
         } else {
-          el.textContent = "🔴 Lỗi API";
+          el.textContent = "🔴 Lỗi Proxy API";
           el.style.color = "#ff4b2b";
         }
-      } catch {
-        el.textContent = "🔴 Không thể kết nối API";
+      } catch (e) {
+        el.textContent = "🔴 Không thể kết nối đến Proxy";
         el.style.color = "#ff4b2b";
       }
     }
 
-    function activate() {
-  const key = document.getElementById("keyInput").value.trim();
-  const status = document.getElementById("status");
-  const found = db.find(k => k.key === key);
-
-  if (!found) {
-    status.textContent = "❌ Key không hợp lệ!";
-    return;
-  }
-
-  const usedKeys = JSON.parse(localStorage.getItem("usedKeys") || "[]");
-  if (usedKeys.includes(key)) {
-    status.textContent = "⛔ Key này đã hết hạn và không thể sử dụng lại!";
-    return;
-  }
-
-  const now = Date.now();
-  const expiresAt = now + found.hours * 60 * 60 * 1000;
-
-  const activated = JSON.parse(localStorage.getItem(activatedName) || "{}");
-  activated[key] = { 
-    key, 
-    activatedAt: now, 
-    expiresAt,
-    rank: found.rank // ✅ Lưu rank theo key
-  };
-
-  localStorage.setItem(activatedName, JSON.stringify(activated));
-  localStorage.setItem("currentKey", key);
-
-  showChat(found, expiresAt);
-}
-
-    function showChat(key, exp) {
-      document.getElementById("activation").style.display = "none";
-      document.getElementById("chat").style.display = "flex";
-      document.getElementById("userRank").innerHTML = `👑 Rank: <b>${key.rank}</b>`;
-      startCountdown(exp);
-      checkAPIStatus();
-    }
-
-    function startCountdown(exp) {
-  const cd = document.getElementById("countdown");
-  clearInterval(timer);
-  timer = setInterval(() => {
-    const now = Date.now();
-    const diff = exp - now;
-    if (diff <= 0) {
-      clearInterval(timer);
-      cd.textContent = "🔒 Key hết hạn!";
-      cd.className = "danger";
-
-      const key = localStorage.getItem("currentKey");
-      if (key) {
-        // 🔐 Khóa key vĩnh viễn (không thể kích hoạt lại)
-        const usedKeys = JSON.parse(localStorage.getItem("usedKeys") || "[]");
-        if (!usedKeys.includes(key)) usedKeys.push(key);
-        localStorage.setItem("usedKeys", JSON.stringify(usedKeys));
-      }
-
-      // 🧹 Đăng xuất và quay lại màn hình chính
-      setTimeout(() => {
-        localStorage.removeItem("currentKey");
-        document.getElementById("chat").style.display = "none";
-        document.getElementById("activation").style.display = "flex";
-        document.getElementById("keyInput").value = "";
-      }, 2000);
-      return;
-    }
-
-    // Hiển thị thời gian còn lại
-    const totalSec = Math.floor(diff / 1000);
-    const d = Math.floor(totalSec / 86400);
-    const h = Math.floor((totalSec % 86400) / 3600);
-    const m = Math.floor((totalSec % 3600) / 60);
-    const s = totalSec % 60;
-    cd.textContent = `⏳ Còn lại: ${d}d ${h}h ${m}m ${s}s`;
-
-    cd.className = diff < 10 * 60 * 1000 ? "danger" : diff < 60 * 60 * 1000 ? "warn" : "";
-  }, 1000);
-}
-
-
+    // Gửi tin nhắn qua Proxy
     async function sendMessage() {
       const msg = document.getElementById("message").value.trim();
       if (!msg) return;
@@ -421,89 +259,38 @@ if (!db || db.length === 0) {
       chat.scrollTop = chat.scrollHeight;
 
       try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        const res = await fetch(`${PROXY_URL}/v1/chat/completions`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`
-          },
-          body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: msg }] })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: msg }]
+          })
         });
         const data = await res.json();
         typing.remove();
         const ai = document.createElement("div");
         ai.className = "message ai";
-        ai.innerHTML = `<div class="avatar">🤖</div><div class="bubble">${data.choices?.[0]?.message?.content || "Lỗi API."}</div>`;
+        ai.innerHTML = `<div class="avatar">🤖</div><div class="bubble">${data.choices?.[0]?.message?.content || "⚠️ Lỗi phản hồi từ AI."}</div>`;
         chat.appendChild(ai);
-      } catch {
+      } catch (e) {
         typing.remove();
         const ai = document.createElement("div");
         ai.className = "message ai";
-        ai.innerHTML = `<div class="avatar">⚠️</div><div class="bubble">Không thể kết nối API.</div>`;
+        ai.innerHTML = `<div class="avatar">⚠️</div><div class="bubble">Không thể kết nối đến máy chủ proxy.</div>`;
         chat.appendChild(ai);
       }
       chat.scrollTop = chat.scrollHeight;
     }
 
-    function logout() {
-      if (confirm("🔒 Đăng xuất khỏi tài khoản?")) {
-        localStorage.removeItem("currentKey");
-          document.getElementById("chat").style.display = "none";
-    document.getElementById("activation").style.display = "flex";
-          localStorage.setItem("lastKey", localStorage.getItem("currentKey"));
-          
-        //location.reload();
-      }
+    // Kích hoạt (giữ nguyên logic key)
+    function activate() {
+      document.getElementById("activation").style.display = "none";
+      document.getElementById("chat").style.display = "flex";
+      checkAPIStatus();
     }
 
-    // ===== Tự động vào chat nếu key đang hoạt động =====
-    //window.onload = () => {
- // const key = localStorage.getItem("currentKey");
-  //const usedKeys = JSON.parse(localStorage.getItem("usedKeys") || "[]");
-
- // if (key && !usedKeys.includes(key)) {
-   // const activated = JSON.parse(localStorage.getItem(activatedName) || "{}");
- //   const found = db.find(k => k.key === key);
-    //if (activated[key] && Date.now() < activated[key].expiresAt) {
-  //    showChat(found, activated[key].expiresAt);
-  //  } else {
-   //   // Key hết hạn hoặc bị khóa
-    //  localStorage.removeItem("currentKey");
-  //  }
-//  }
-// };
-      
-      // ===== TỰ ĐỘNG KIỂM TRA KEY ĐANG HOẠT ĐỘNG =====
-window.onload = () => {
-  const key = localStorage.getItem("currentKey");
-  const usedKeys = JSON.parse(localStorage.getItem("usedKeys") || "[]");
-  const activated = JSON.parse(localStorage.getItem(activatedName) || "{}");
-
-  // Nếu có key đang dùng
-  if (key && activated[key] && !usedKeys.includes(key)) {
-    const found = db.find(k => k.key === key);
-    const exp = activated[key].expiresAt;
-
-    if (Date.now() < exp) {
-      showChat(found, exp);
-    } else {
-      localStorage.removeItem("currentKey");
-    }
-  } else {
-    // Nếu người dùng đã logout, nhưng key vẫn còn hiệu lực
-    // => Cho phép họ nhập lại key cũ để tiếp tục
-    const allKeys = Object.keys(activated);
-    for (const k of allKeys) {
-      if (!usedKeys.includes(k) && Date.now() < activated[k].expiresAt) {
-        document.getElementById("status").innerHTML =
-          `🔑 Key <b>${k}</b> vẫn còn hiệu lực. Bạn có thể nhập lại để tiếp tục.`;
-        break;
-      }
-    }
-  }
-};
-      
-
+    window.onload = checkAPIStatus;
   </script>
 </body>
 </html>
