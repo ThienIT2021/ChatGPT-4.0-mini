@@ -299,9 +299,15 @@ if (!db || db.length === 0) {
     async function checkAPIStatus() {
       const el = document.getElementById("apiStatus");
       try {
-        const res = await fetch("https://api.openai.com/v1/models/gpt-4o-mini", {
-          headers: { "Authorization": `Bearer ${API_KEY}` }
+        // const res = await fetch("https://api.openai.com/v1/models/gpt-4o-mini", {
+        //  headers: { "Authorization": `Bearer ${API_KEY}` }
+        //});
+        const res = await fetch("https://chatgpt-4-0-mini-1.onrender.com/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: msg })
         });
+
         if (res.ok) {
           el.textContent = "🟢 ChatGPT 5.0 Online";
           el.style.color = "#00ff99";
