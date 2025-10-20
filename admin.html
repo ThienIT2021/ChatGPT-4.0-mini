@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Quản lý Key</title>
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      background: #202123;
+      color: #eee;
+      padding: 20px;
+    }
+    /* ========== MÀN HÌNH ĐĂNG NHẬP ========== */
+    #login {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #343541;
+    }
+    #login-box {
+      background: #444654;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      text-align: center;
+      width: 320px;
+    }
+    #login-box h2 {
+      color: #10a37f;
+      margin-bottom: 20px;
+    }
+    #adminPass {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #555;
+      color: #fff;
+      font-size: 15px;
+      margin-bottom: 15px;
+    }
+    #login-box button {
+      background: #10a37f;
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 10px 16px;
+      width: 100%;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+    #login-box button:hover { background: #0e8f71; transform: scale(1.03); }
+    #login-msg { color: #ff7070; margin-top: 10px; font-size: 14px; }
+
+    /* ========== TRANG ADMIN ========== */
+    #admin {
+      display: none;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #10a37f;
+      margin-bottom: 10px;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .btn {
+      background: #10a37f;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.25s ease;
+      margin: 0 5px;
+    }
+    .btn:hover { background: #0e8f71; transform: scale(1.05); }
+
+    .logout-btn {
+      background: #c40d0d;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.25s ease;
+      margin: 0 5px;
+    }
+    .logout-btn:hover { background: #8f370e; transform: scale(1.05); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #2d2e35;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #3c3d44;
+    }
+    th { background: #343541; }
+    tr:hover { background: #3c3d44; }
+    .green { color: #00ff99; }
+    .yellow { color: #ffcc66; }
+    .red { color: #ff6666; }
+    .purple { color: #c17aff; font-weight: 600; }
+
+    .copy-btn {
+      background: #10a37f;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.25s ease;
+    }
+    .copy-btn:hover { background: #0e8f71; transform: scale(1.05); }
+
+    .extend-btn {
+      background: #ffc107;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 5px;
+      transition: all 0.25s ease;
+    }
+    .extend-btn:hover { background: #e0a800; transform: scale(1.05); }
+  </style>
+</head>
+<body>
+  <!-- ========== MÀN HÌNH LOGIN ADMIN ========== -->
+  <div id="login">
+    <div id="login-box">
+      <h2>🔐 Đăng nhập Admin</h2>
+      <input type="password" id="adminPass" placeholder="Nhập mật khẩu..." />
+      <button onclick="login()">Đăng nhập</button>
+      <div id="login-msg"></div>
+    </div>
+  </div>
+
+  <!-- ========== TRANG QUẢN LÝ ADMIN ========== -->
+  <div id="admin">
+    <h1>🛠️ Quản lý Database Key</h1>
+    <div class="controls">
+      <button class="btn" onclick="generateNewKeys()">🔁 Sinh lại Key</button>
+      <button class="logout-btn" onclick="logoutAdmin()">Đăng xuất</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Key</th>
+          <th>Loại hạn</th>
+          <th>Trạng thái</th>
+          <th>Thời gian còn lại</th>
+          <th>Rank</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="key-table"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const ADMIN_PASSWORD = "Master@012025";
+    const keyDBName = "keyDB_fixed";
+
+    function login() {
+      const pass = document.getElementById("adminPass").value.trim();
+      if (pass === ADMIN_PASSWORD) {
+        localStorage.setItem("admin_logged_in", "true");
+        document.getElementById("login").style.display = "none";
+        document.getElementById("admin").style.display = "block";
+        renderKeys();
+      } else {
+        document.getElementById("login-msg").textContent = "❌ Sai mật khẩu!";
+      }
+    }
+
+    function logoutAdmin() {
+      if (confirm("🔒 Bạn có chắc muốn đăng xuất không?")) {
+        localStorage.removeItem("admin_logged_in");
+        location.reload();
+      }
+    }
+
+    window.onload = () => {
+      if (localStorage.getItem("admin_logged_in") === "true") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("admin").style.display = "block";
+        renderKeys();
+      }
+    };
+
+    // ========== Database cố định ==========
+    let keyDatabase = [
+    { key: "KEY-2H-ADCH1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-HTKM1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-NWDS1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-OPGH1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-PPCM1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-DCFG1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-POJG1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-ZAMX1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-DEVP1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-2H-MNKX1234", label: "2h", hours: 2, rank: "Normal" },
+  { key: "KEY-24H-ILKJ9012", label: "24h", hours: 24, rank: "Member" },
+  { key: "KEY-24H-IOIH9012", label: "24h", hours: 24, rank: "Member" },
+  { key: "KEY-24H-KLPI9012", label: "24h", hours: 24, rank: "Member" },
+  { key: "KEY-24H-VCRE9012", label: "24h", hours: 24, rank: "Member" },
+  { key: "KEY-24H-CXPL9012", label: "24h", hours: 24, rank: "Member" },
+  { key: "KEY-7D-MMKS3456", label: "7d", hours: 7 * 24, rank: "VIP" },
+  { key: "KEY-7D-TTGH3456", label: "7d", hours: 7 * 24, rank: "VIP" },
+  { key: "KEY-7D-PLQS3456", label: "7d", hours: 7 * 24, rank: "VIP" },
+  { key: "KEY-7D-NHAS3456", label: "7d", hours: 7 * 24, rank: "VIP" },
+  { key: "KEY-7D-SEXY3456", label: "7d", hours: 7 * 24, rank: "VIP" },
+  { key: "KEY-30D-ZZKN5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-PPLV5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-MMLK5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-YYGV5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-MLDS5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-BHGT5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-BIDV5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-SACO5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-TELA5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-MJTE5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "KEY-30D-META5678", label: "30d", hours: 30 * 24, rank: "Premium" },
+  { key: "ADMIN-KEY-DEV-365DAYS", label: "Admin 365d", hours: 365 * 24, rank: "Admin Dev", admin: true }
+];
+    localStorage.setItem(keyDBName, JSON.stringify(keyDatabase));
+
+    function countdown(ms) {
+      if (ms <= 0) return "Hết hạn";
+      const totalSec = Math.floor(ms / 1000);
+      const d = Math.floor(totalSec / 86400);
+      const h = Math.floor((totalSec % 86400) / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      return `${d}d ${h}h ${m}m`;
+    }
+
+    const table = document.getElementById("key-table");
+    function renderKeys() {
+      const localKeys = JSON.parse(localStorage.getItem("activatedKeys") || "{}");
+      table.innerHTML = "";
+      const now = Date.now();
+
+      keyDatabase.forEach((k, i) => {
+        const saved = localKeys[k.key];
+        let status = "🟢 Chưa kích hoạt", color = "green", remain = "-";
+
+        if (k.admin) {
+          status = "👑 Admin 365 ngày";
+          color = "purple";
+          remain = "♾️";
+        } else if (saved && saved.expiresAt) {
+          if (now >= saved.expiresAt) {
+            status = "🔴 Hết hạn"; color = "red";
+          } else {
+            status = "🟡 Đang hoạt động"; color = "yellow";
+            remain = countdown(saved.expiresAt - now);
+          }
+        }
+
+        table.innerHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${k.key}</td>
+            <td>${k.label}</td>
+            <td class="${color}">${status}</td>
+            <td class="${color}">${remain}</td>
+            <td>${k.rank}</td>
+            <td>
+              <button class="copy-btn" onclick="copyKey('${k.key}')">Copy</button>
+              <button class="extend-btn" onclick="extendKey('${k.key}')">⏳ Gia hạn</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function copyKey(k) {
+      navigator.clipboard.writeText(k);
+      alert("✅ Đã copy key: " + k);
+    }
+
+    function extendKey(key) {
+      const hoursInput = prompt("⏳ Nhập số giờ muốn gia hạn thêm cho key này:", "24");
+      if (!hoursInput || isNaN(hoursInput) || hoursInput <= 0) {
+        alert("❌ Giá trị không hợp lệ!");
+        return;
+      }
+
+      const activatedKeys = JSON.parse(localStorage.getItem("activatedKeys") || "{}");
+      const keyInfo = activatedKeys[key];
+
+      if (!keyInfo) {
+        alert("⚠️ Key này chưa kích hoạt!");
+        return;
+      }
+
+      const addedMs = parseInt(hoursInput) * 60 * 60 * 1000;
+      keyInfo.expiresAt += addedMs;
+      activatedKeys[key] = keyInfo;
+      localStorage.setItem("activatedKeys", JSON.stringify(activatedKeys));
+
+      alert(`✅ Đã gia hạn thêm ${hoursInput} giờ cho key ${key}!`);
+      renderKeys();
+    }
+
+    function generateNewKeys() {
+      if (confirm("⚠️ Sinh lại toàn bộ key mới sẽ xóa key cũ. Tiếp tục?")) {
+        localStorage.removeItem("activatedKeys");
+        alert("✅ Đã tạo lại database key!");
+        renderKeys();
+      }
+    }
+  </script>
+</body>
+</html>
