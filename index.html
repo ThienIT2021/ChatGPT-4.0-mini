@@ -305,7 +305,7 @@ if (!db || db.length === 0) {
         //});
 		const res = await fetch("http://localhost:3000/chat", {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: { "Content-Type": "application/json", "Authorization": `Bearer ${PROXY_URL}` },
 			body: JSON.stringify({ message: msg })
 		});
 
