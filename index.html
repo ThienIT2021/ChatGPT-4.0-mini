@@ -293,7 +293,7 @@ if (!db || db.length === 0) {
 }
 
 
-    const API_KEY = "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";
+    // const API_KEY = "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";
     let timer;
 
     async function checkAPIStatus() {
@@ -302,7 +302,7 @@ if (!db || db.length === 0) {
         // const res = await fetch("https://api.openai.com/v1/models/gpt-4o-mini", {
         //  headers: { "Authorization": `Bearer ${API_KEY}` }
         //});
-        const res = await fetch("https://chatgpt-4-0-mini-1.onrender.com", {
+        const res = await fetch("https://chatgpt-proxy-server-kj30.onrender.com/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: msg })
