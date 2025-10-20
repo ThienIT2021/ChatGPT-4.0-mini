@@ -303,9 +303,7 @@ if (!db || db.length === 0) {
         //const res = await fetch("https://api.openai.com/v1/models/gpt-4o-mini", {
         //  headers: { "Authorization": `Bearer ${API_KEY}` }
         //});
-		const res = await fetch(`${API_KEY}/v1/models`){
-			headers: { "Authorization": `Bearer ${API_KEY}` }
-		};
+		const res = await fetch(`${API_KEY}/v1/models`);
 
         if (res.ok) {
           el.textContent = "🟢 ChatGPT 5.0 Online";
@@ -430,12 +428,20 @@ if (!db || db.length === 0) {
         //});
 		  const res = await fetch(`${API_KEY}/v1/chat/completions`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: msg }]
-          })
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${API_KEY}`
+          },
+          body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: msg }] })
         });
+		  //const res = await fetch(`${API_KEY}/v1/chat/completions`, {
+          //method: "POST",
+          //headers: { "Content-Type": "application/json" },
+          //body: JSON.stringify({
+          //  model: "gpt-4o-mini",
+         //   messages: [{ role: "user", content: msg }]
+         // })
+       // });
         const data = await res.json();
         typing.remove();
         const ai = document.createElement("div");
