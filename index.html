@@ -294,7 +294,7 @@ if (!db || db.length === 0) {
 
 
     //const API_KEY = "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";
-    const PROXY_URL = "https://chatgpt-proxy-server-kj30.onrender.com"; // 🔗 URL proxy của bạn
+    const API_KEY = "https://chatgpt-proxy-server-kj30.onrender.com"; // 🔗 URL proxy của bạn
 	let timer;
 
     async function checkAPIStatus() {
@@ -303,10 +303,10 @@ if (!db || db.length === 0) {
         //const res = await fetch("https://api.openai.com/v1/models/gpt-4o-mini", {
         //  headers: { "Authorization": `Bearer ${API_KEY}` }
         //});
-		const res = await fetch("http://localhost:3000/chat", {
-			method: "POST",
-			headers: { "Content-Type": "application/json", "Authorization": `Bearer ${PROXY_URL}` },
-			body: JSON.stringify({ message: msg })
+		const res = await fetch("https://chatgpt-proxy-server-kj30.onrender.com/chat", {
+	
+			headers: {"Authorization": `Bearer ${API_KEY}` }
+
 		});
 
         if (res.ok) {
