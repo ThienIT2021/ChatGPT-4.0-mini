@@ -295,20 +295,17 @@ if (!db || db.length === 0) {
 
     //const API_KEY = ;
     //const API_KEY = "https://chatgpt-proxy-server-kj30.onrender.com"; // 🔗 URL proxy của bạn
-	const API_KEY = window.location.hostname === "localhost"
-  ? "http://localhost:3000/v1/chat/completions"
-  : "https://chatgpt-proxy-server-kj30.onrender.com/v1/chat/completions";
-
-	  let timer;
+	const API_KEY = window.location.hostname === "localhost" ? "http://localhost:3000/v1/chat/completions" : "https://chatgpt-proxy-server-kj30.onrender.com/v1/chat/completions";
+	let timer;
 
     async function checkAPIStatus() {
       const el = document.getElementById("apiStatus");
       try {
-        //const res = await fetch("https://api.openai.com/v1/models/gpt-4o-mini", {
-        //  headers: { "Authorization": `Bearer ${API_KEY}` }
-        //});
+        const res = await fetch("`${API_KEY}/v1/models/gpt-4o-mini", {
+          headers: { "Authorization": `Bearer ${API_KEY}` }
+        });
 		//const res = await fetch(`${API_KEY}/v1/models/gpt-4o-mini`);
-		const res = await fetch("https://chatgpt-proxy-server-kj30.onrender.com/v1/chat/completions", {
+		//const res = await fetch("https://chatgpt-proxy-server-kj30.onrender.com/v1/chat/completions", {
 
         if (res.ok) {
           el.textContent = "🟢 ChatGPT 5.0 Online";
